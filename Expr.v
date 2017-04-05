@@ -1,6 +1,8 @@
 Require Export BigZ.
 Require Export Id.
 Require Export State.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Relations.Relation_Definitions.
 
 (* Type of arithmetic expressions *)
 Inductive expr : Type :=
@@ -526,7 +528,7 @@ Qed.
 (* Semantic equivalence *)
 Reserved Notation "e1 '~~' e2" (at level 42, no associativity).
 
-Inductive equivalent: expr -> expr -> Prop := 
+Inductive equivalent: relation expr :=
   eq_intro : forall (e1 e2 : expr), 
                (forall (n : Z) (s : state Z), 
                  [| e1 |] s => n <-> [| e2 |] s => n
@@ -535,14 +537,47 @@ where "e1 '~~' e2" := (equivalent e1 e2).
 
 (* Semantic equivalence is an equivalence relation *)
 Lemma eq_refl: forall (e : expr), e ~~ e.
-Proof. admit. Admitted.
+Proof.
+  intros.
+  apply eq_intro.
+  intros.
+  reflexivity.
+Qed.
 
 Lemma eq_symm: forall (e1 e2 : expr), e1 ~~ e2 -> e2 ~~ e1.
-Proof. admit. Admitted.
+Proof.
+  intros.
+  apply eq_intro.
+  intros.
+  symmetry.
+  destruct H.
+  apply (H n s).
+Qed.
 
 Lemma eq_trans: forall (e1 e2 e3 : expr), e1 ~~ e2 -> e2 ~~ e3 -> e1 ~~ e3.
-Proof. admit. Admitted.
- 
+Proof.
+  intros.
+  apply eq_intro.
+  intros.
+  destruct H.
+  destruct H0.
+  rewrite (H n s).
+  apply (H0 n s).
+Qed.
+
+Instance eq_equiv: Equivalence equivalent.
+Proof.
+  split.
+  { split. remember (eq_refl x). inversion e. assumption. }
+  { split. remember (eq_symm x y). apply e in H. destruct H. assumption. }
+  { split. remember (eq_trans x y z). apply e in H. destruct H. assumption. assumption. }
+Qed.
+
+Example test_eq_refl : (Nat 1) ~~ (Nat 1).
+Proof. reflexivity. Qed.
+Example test_eq_symm : (forall a b: expr, (a ~~ b) -> (b ~~ a)).
+Proof. intros. symmetry. assumption. Qed.
+
 (* Contexts *)
 Inductive Context : Type :=
   | Hole : Context
