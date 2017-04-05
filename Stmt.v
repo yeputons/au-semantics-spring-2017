@@ -52,10 +52,44 @@ Inductive bs_int : stmt -> conf -> conf -> Prop :=
                        [| e |] st => Z.zero -> (st, i, o) == WHILE e DO s END ==> (st, i, o)
 where "c1 == s ==> c2" := (bs_int s c1 c2).
 
+Lemma bs_eval_deterministic_one_zero: forall (e : expr) (s : state Z),
+  [| e |] s => Z.zero -> [| e |] s => Z.one -> False.
+Proof.
+  intros.
+  assert (Z.zero = Z.one).
+  apply (bs_eval_deterministic e s Z.zero Z.one). assumption. assumption.
+  inversion H1.
+Qed.
+
 (* Big-step semantics is deterministic *)
 (* Note: DB did not prove this yet     *)
 Lemma bs_int_deterministic : forall (c c1 c2 : conf) (s : stmt), c == s ==> c1 -> c == s ==> c2 -> c1 = c2.
-Proof. admit. Admitted.
+Proof.
+  cut (forall (s : stmt) (c c1 : conf), c == s ==> c1 -> forall (c2 : conf), c == s ==> c2 -> c1 = c2).
+  { firstorder. }
+  intros s c c1 H.
+  induction H.
+  - intros. inversion H. reflexivity.
+  - intros. inversion H0. apply (bs_eval_deterministic e s z z0) in H. rewrite H. reflexivity. assumption.
+  - intros. inversion H. reflexivity.
+  - intros. inversion H0. apply (bs_eval_deterministic e s z z0) in H. rewrite H. reflexivity. assumption.
+  - intros. inversion H1.
+    assert (c' = c'0).
+    { apply (IHbs_int1 c'0). assumption. }
+    rewrite <-H8 in H7. apply (IHbs_int2 c2). assumption.
+  - intros. inversion H1.
+    + apply (IHbs_int c2) in H10. assumption.
+    + apply (bs_eval_deterministic_one_zero e s) in H. exfalso. assumption. assumption.
+  - intros. inversion H1.
+    + apply (bs_eval_deterministic_one_zero e s) in H. exfalso. assumption. assumption.
+    + apply (IHbs_int c2) in H10. assumption.
+  - intros. inversion H2.
+    + assert (c' = c'0). auto. rewrite <-H12 in H11. apply IHbs_int2. assumption.
+    + apply (bs_eval_deterministic_one_zero e st) in H. exfalso. assumption. assumption.
+  - intros. inversion H0.
+    + apply (bs_eval_deterministic_one_zero e st) in H. exfalso. assumption. assumption.
+    + reflexivity.
+Qed.
 
 Reserved Notation "s1 '~~~' s2" (at level 0).
 
