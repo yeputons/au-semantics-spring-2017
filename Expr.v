@@ -650,10 +650,6 @@ Inductive contextual_equivalent: expr -> expr -> Prop :=
                 (forall (C : Context), (C <~ e1) ~~ (C <~ e2)) -> e1 ~c~ e2
 where "e1 '~c~' e2" := (contextual_equivalent e1 e2).
 
-(* Contextual equivalence is equivalent to the semantic one *)
-Lemma eq_eq_ceq: forall (e1 e2 : expr), e1 ~~ e2 <-> e1 ~c~ e2.
-Proof. admit. Admitted.
-
 (* Context equivalence is an equivalence relation *)
 Lemma ceq_refl: forall (e : expr), e ~c~ e.
 Proof.
@@ -692,6 +688,131 @@ Proof.
   { split. remember (ceq_trans x y z). apply c in H. destruct H. assumption. assumption. }
 Qed.
 
+Lemma ceq_hole_eq: forall e : expr, (Hole <~ e) = e.
+Proof. auto. Qed.
+
+Lemma eq_eq_ceq_one_side:
+  forall e1 e2 : expr, forall C: Context, forall n: Z, forall s: state Z,
+  (e1 ~~ e2) -> [|C <~ e1|] s => (n) -> [|C <~ e2|] s => (n).
+Proof.
+  intros e1 e2 C.
+  induction C.
+  { intros. destruct H. apply (H n s). rewrite <-(ceq_hole_eq e1). assumption. }
+
+  { intros. assert (forall e1, (AddL C e <~ e1) = (Add (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Add. apply IHC. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (SubL C e <~ e1) = (Sub (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Sub. apply IHC. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (MulL C e <~ e1) = (Mul (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Mul. apply IHC. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (DivL C e <~ e1) = (Div (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Div. apply IHC. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (ModL C e <~ e1) = (Mod (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Mod. apply IHC. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (LeL C e <~ e1) = (Le (C <~ e1) e)). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Le_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
+    apply (bs_Le_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (LtL C e <~ e1) = (Lt (C <~ e1) e)). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Lt_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
+    apply (bs_Lt_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (GeL C e <~ e1) = (Ge (C <~ e1) e)). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Ge_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
+    apply (bs_Ge_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (GtL C e <~ e1) = (Gt (C <~ e1) e)). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Gt_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
+    apply (bs_Gt_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (EqL C e <~ e1) = (Eq (C <~ e1) e)). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Eq_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
+    apply (bs_Eq_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (NeL C e <~ e1) = (Ne (C <~ e1) e)). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Ne_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
+    apply (bs_Ne_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (AndL C e <~ e1) = (And (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_And. apply IHC. assumption. assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (OrL C e <~ e1) = (Or (C <~ e1) e)). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Or. apply IHC. assumption. assumption. assumption. assumption. assumption. }
+
+  { intros. assert (forall e1, (AddR e C <~ e1) = (Add e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Add. assumption. apply IHC. assumption. assumption. }
+  { intros. assert (forall e1, (SubR e C <~ e1) = (Sub e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Sub. assumption. apply IHC. assumption. assumption. }
+  { intros. assert (forall e1, (MulR e C <~ e1) = (Mul e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Mul. assumption. apply IHC. assumption. assumption. }
+  { intros. assert (forall e1, (DivR e C <~ e1) = (Div e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Div. assumption. apply IHC. assumption. assumption. }
+  { intros. assert (forall e1, (ModR e C <~ e1) = (Mod e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Mod. assumption. apply IHC. assumption. assumption. }
+  { intros. assert (forall e1, (LeR e C <~ e1) = (Le e (C <~ e1))). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Le_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
+    apply (bs_Le_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
+  { intros. assert (forall e1, (LtR e C <~ e1) = (Lt e (C <~ e1))). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Lt_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
+    apply (bs_Lt_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
+  { intros. assert (forall e1, (GeR e C <~ e1) = (Ge e (C <~ e1))). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Ge_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
+    apply (bs_Ge_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
+  { intros. assert (forall e1, (GtR e C <~ e1) = (Gt e (C <~ e1))). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Gt_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
+    apply (bs_Gt_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
+  { intros. assert (forall e1, (EqR e C <~ e1) = (Eq e (C <~ e1))). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Eq_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
+    apply (bs_Eq_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
+  { intros. assert (forall e1, (NeR e C <~ e1) = (Ne e (C <~ e1))). auto.
+    rewrite H1 in H0. rewrite H1. inversion_clear H0.
+    apply (bs_Ne_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
+    apply (bs_Ne_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
+  { intros. assert (forall e1, (AndR e C <~ e1) = (And e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_And. assumption. apply IHC. assumption. assumption. assumption. assumption. }
+  { intros. assert (forall e1, (OrR e C <~ e1) = (Or e (C <~ e1))). auto.
+    rewrite H1 in H0. inversion_clear H0.
+    rewrite H1. apply bs_Or. assumption. apply IHC. assumption. assumption. assumption. assumption. }
+Qed.
+
+(* Contextual equivalence is equivalent to the semantic one *)
+Lemma eq_eq_ceq: forall (e1 e2 : expr), e1 ~~ e2 <-> e1 ~c~ e2.
+Proof.
+  intros.
+  split.
+  {
+    intros. apply ceq_intro. intros. apply eq_intro. intros.
+    split.
+    apply (eq_eq_ceq_one_side e1 e2). assumption.
+    apply (eq_eq_ceq_one_side e2 e1). symmetry. assumption.
+  }
+  { intros. apply eq_intro. intros.
+    destruct H.
+    remember (H Hole).
+    inversion_clear e.
+    remember (H0 n s).
+    rewrite <-(ceq_hole_eq e1).
+    rewrite <-(ceq_hole_eq e2).
+    assumption.
+  }
+Qed.
 
 
 
