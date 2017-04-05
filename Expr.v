@@ -654,7 +654,43 @@ where "e1 '~c~' e2" := (contextual_equivalent e1 e2).
 Lemma eq_eq_ceq: forall (e1 e2 : expr), e1 ~~ e2 <-> e1 ~c~ e2.
 Proof. admit. Admitted.
 
+(* Context equivalence is an equivalence relation *)
+Lemma ceq_refl: forall (e : expr), e ~c~ e.
+Proof.
+  intros.
+  apply ceq_intro.
+  intros.
+  reflexivity.
+Qed.
 
+Lemma ceq_symm: forall (e1 e2 : expr), e1 ~c~ e2 -> e2 ~c~ e1.
+Proof.
+  intros.
+  apply ceq_intro.
+  intros.
+  symmetry.
+  destruct H.
+  apply (H C).
+Qed.
+
+Lemma ceq_trans: forall (e1 e2 e3 : expr), e1 ~c~ e2 -> e2 ~c~ e3 -> e1 ~c~ e3.
+Proof.
+  intros.
+  apply ceq_intro.
+  intros.
+  destruct H.
+  destruct H0.
+  rewrite (H C).
+  apply (H0 C).
+Qed.
+
+Instance ceq_equiv: Equivalence contextual_equivalent.
+Proof.
+  split.
+  { split. remember (ceq_refl x). inversion c. assumption. }
+  { split. remember (ceq_symm x y). apply c in H. destruct H. assumption. }
+  { split. remember (ceq_trans x y z). apply c in H. destruct H. assumption. assumption. }
+Qed.
 
 
 
