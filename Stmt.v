@@ -94,7 +94,10 @@ Qed.
 Reserved Notation "s1 '~~~' s2" (at level 0).
 
 Inductive bs_equivalent: stmt -> stmt -> Prop :=
-  bs_eq_intro: forall (s1 s2 : stmt) (c c' : conf), (c == s1 ==> c' <-> c == s2 ==> c') -> s1 ~~~ s2
+  bs_eq_intro: forall (s1 s2 : stmt),
+    (forall (c c' : conf),
+      (c == s1 ==> c' <-> c == s2 ==> c')
+    ) -> s1 ~~~ s2
 where "s1 '~~~' s2" := (bs_equivalent s1 s2).
 
 Module SmokeTest.
