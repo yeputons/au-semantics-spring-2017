@@ -62,7 +62,6 @@ Proof.
 Qed.
 
 (* Big-step semantics is deterministic *)
-(* Note: DB did not prove this yet     *)
 Lemma bs_int_deterministic : forall (c c1 c2 : conf) (s : stmt), c == s ==> c1 -> c == s ==> c2 -> c1 = c2.
 Proof.
   cut (forall (s : stmt) (c c1 : conf), c == s ==> c1 -> forall (c2 : conf), c == s ==> c2 -> c1 = c2).
@@ -94,13 +93,19 @@ Qed.
 Reserved Notation "s1 '~~~' s2" (at level 0).
 
 Inductive bs_equivalent: stmt -> stmt -> Prop :=
-  bs_eq_intro: forall (s1 s2 : stmt),
-    (forall (c c' : conf),
-      (c == s1 ==> c' <-> c == s2 ==> c')
-    ) -> s1 ~~~ s2
+  bs_eq_intro: forall (s1 s2 : stmt), 
+                 (forall (c c' : conf), c == s1 ==> c' <-> c == s2 ==> c') -> s1 ~~~ s2
 where "s1 '~~~' s2" := (bs_equivalent s1 s2).
 
 Module SmokeTest.
+
+  Lemma seq_assoc : forall (s1 s2 s3 : stmt) (c c' : conf),
+                      ((s1 ;; s2) ;; s3) ~~~ (s1 ;; (s2 ;; s3)).
+  Proof. admit. Admitted.
+
+  Lemma while_unfolds : forall (e : expr) (s : stmt) (c c' : conf),
+                          (WHILE e DO s END) ~~~ (COND e THEN s ;; WHILE e DO s END ELSE SKIP END).
+  Proof. admit. Admitted.    
 
   Lemma while_false : forall (e : expr) (s : stmt) (st : state Z) (i o : list Z) (c : conf),
                         c == WHILE e DO s END ==> (st, i, o) -> [| e |] st => Z.zero.
@@ -122,14 +127,46 @@ Module SmokeTest.
       assumption.
   Qed.
 
-  Definition X := Id 1.
-  Definition Y := Id 2.
   Definition True := Nat 1.
 
-  Lemma loop_eq_undefined : (WHILE True DO SKIP END) ~~~ (X ::= Var Y).
-  Proof. admit. Admitted.  
+  Lemma loop_eq_undefined : (WHILE True DO SKIP END) ~~~ (COND (Nat 3) THEN SKIP ELSE SKIP END).
+  Proof. admit. Admitted.
   
 End SmokeTest.
+
+(* Contextual equivalence *)
+Inductive Context : Type :=
+| Hole 
+| SeqL   : Context -> stmt -> Context
+| SeqR   : stmt -> Context -> Context
+| IfThen : expr -> Context -> stmt -> Context
+| IfElse : expr -> stmt -> Context -> Context
+| WhileC : expr -> Context -> Context.
+
+(* Plugging a statement into a context *)
+Fixpoint plug (C : Context) (s : stmt) : stmt := 
+  match C with
+  | Hole => s
+  | SeqL     C  s1 => Seq (plug C s) s1
+  | SeqR     s1 C  => Seq s1 (plug C s) 
+  | IfThen e C  s1 => If e (plug C s) s1
+  | IfElse e s1 C  => If e s1 (plug C s)
+  | WhileC   e  C  => While e (plug C s)
+  end.  
+
+Notation "C '<~' e" := (plug C e) (at level 43, no associativity).
+
+(* Contextual equivalence *)
+Reserved Notation "e1 '~c~' e2" (at level 42, no associativity).
+
+Inductive contextual_equivalent: stmt -> stmt -> Prop :=
+  ceq_intro : forall (s1 s2 : stmt),
+                (forall (C : Context), (C <~ s1) ~~~ (C <~ s2)) -> s1 ~c~ s2
+where "s1 '~c~' s2" := (contextual_equivalent s1 s2).
+
+(* Contextual equivalence is equivalent to the semantic one *)
+Lemma eq_eq_ceq: forall (s1 s2 : stmt), s1 ~~~ s2 <-> s1 ~c~ s2.
+Proof. admit. Admitted.
 
 (* CPS-style semantics *)
 Inductive cont : Type := 
