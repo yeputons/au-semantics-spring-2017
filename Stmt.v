@@ -84,6 +84,40 @@ Module SmokeTest.
   
 End SmokeTest.
 
+(* Contextual equivalence *)
+Inductive Context : Type :=
+| Hole 
+| SeqL   : Context -> stmt -> Context
+| SeqR   : stmt -> Context -> Context
+| IfThen : expr -> Context -> stmt -> Context
+| IfElse : expr -> stmt -> Context -> Context
+| WhileC : expr -> Context -> Context.
+
+(* Plugging a statement into a context *)
+Fixpoint plug (C : Context) (s : stmt) : stmt := 
+  match C with
+  | Hole => s
+  | SeqL     C  s1 => Seq (plug C s) s1
+  | SeqR     s1 C  => Seq s1 (plug C s) 
+  | IfThen e C  s1 => If e (plug C s) s1
+  | IfElse e s1 C  => If e s1 (plug C s)
+  | WhileC   e  C  => While e (plug C s)
+  end.  
+
+Notation "C '<~' e" := (plug C e) (at level 43, no associativity).
+
+(* Contextual equivalence *)
+Reserved Notation "e1 '~c~' e2" (at level 42, no associativity).
+
+Inductive contextual_equivalent: stmt -> stmt -> Prop :=
+  ceq_intro : forall (s1 s2 : stmt),
+                (forall (C : Context), (C <~ s1) ~~~ (C <~ s2)) -> s1 ~c~ s2
+where "s1 '~c~' s2" := (contextual_equivalent s1 s2).
+
+(* Contextual equivalence is equivalent to the semantic one *)
+Lemma eq_eq_ceq: forall (s1 s2 : stmt), s1 ~~~ s2 <-> s1 ~c~ s2.
+Proof. admit. Admitted.
+
 (* CPS-style semantics *)
 Inductive cont : Type := 
 | KEmpty : cont
