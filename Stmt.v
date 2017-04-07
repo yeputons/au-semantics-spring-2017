@@ -104,7 +104,23 @@ Module SmokeTest.
 
   Lemma while_false : forall (e : expr) (s : stmt) (st : state Z) (i o : list Z) (c : conf),
                         c == WHILE e DO s END ==> (st, i, o) -> [| e |] st => Z.zero.
-  Proof. admit. Admitted.
+  Proof.
+    intros e s st i o c H.
+    remember (st, i, o).
+    remember (WHILE e DO s END).
+    induction H.
+    - inversion Heqs0.
+    - inversion Heqs0.
+    - inversion Heqs0.
+    - inversion Heqs0.
+    - inversion Heqs0.
+    - inversion Heqs0.
+    - inversion Heqs0.
+    - apply IHbs_int2. assumption. assumption.
+    - inversion Heqs0 as [[He Hs]]. rewrite <-He.
+      inversion Heqp as [[Hst Hi Ho]]. rewrite <-Hst.
+      assumption.
+  Qed.
 
   Definition X := Id 1.
   Definition Y := Id 2.
