@@ -97,15 +97,39 @@ Inductive bs_equivalent: stmt -> stmt -> Prop :=
                  (forall (c c' : conf), c == s1 ==> c' <-> c == s2 ==> c') -> s1 ~~~ s2
 where "s1 '~~~' s2" := (bs_equivalent s1 s2).
 
+Ltac apply_seq_all :=
+  match goal with
+  | H: ?c1 == ?s1 ==> ?c2 |- ?c1 == ?s1;; _ ==> _ =>
+    apply bs_Seq with c2; solve [assumption|solve [apply_seq_all|assumption]]
+  | H: ?c2 == ?s2 ==> ?c3 |- ?c1 == _;; ?s2 ==> ?c3 =>
+    apply bs_Seq with c2; solve [assumption|solve [apply_seq_all|assumption]]
+  end.
+
 Module SmokeTest.
+  Ltac inversion_seq_all :=
+    match goal with
+    | H: _ == _;; _ ==> _ |- _ => inversion_clear H; try inversion_seq_all
+    end.
 
   Lemma seq_assoc : forall (s1 s2 s3 : stmt),
                       ((s1 ;; s2) ;; s3) ~~~ (s1 ;; (s2 ;; s3)).
-  Proof. admit. Admitted.
+  Proof.
+    intros s1 s2 s3. constructor. intros c c'.
+    split; intros H; inversion_seq_all; apply_seq_all.
+  Qed.
 
   Lemma while_unfolds : forall (e : expr) (s : stmt),
                           (WHILE e DO s END) ~~~ (COND e THEN s ;; WHILE e DO s END ELSE SKIP END).
-  Proof. admit. Admitted.    
+  Proof.
+    intros e s. constructor. intros [[st i] o] [[st' i'] o'].
+    split.
+    - intros H. inversion H.
+      + constructor. assumption. apply_seq_all.
+      + apply bs_If_False. assumption. apply bs_Skip.
+    - intros H. inversion H.
+      + inversion_seq_all. apply bs_While_True with c'0; assumption.
+      + inversion H8. apply bs_While_False. congruence.
+  Qed.
 
   Lemma while_false : forall (e : expr) (s : stmt) (st : state Z) (i o : list Z) (c : conf),
                         c == WHILE e DO s END ==> (st, i, o) -> [| e |] st => Z.zero.
@@ -130,7 +154,15 @@ Module SmokeTest.
   Definition True := Nat 1.
 
   Lemma loop_eq_undefined : (WHILE True DO SKIP END) ~~~ (COND (Nat 3) THEN SKIP ELSE SKIP END).
-  Proof. admit. Admitted.
+  Proof.
+    constructor. intros [[st i] o] [[st' i'] o']. split.
+    - intros H. remember (WHILE True DO SKIP END). induction H; inversion Heqs.
+      + apply IHbs_int2 in Heqs. rewrite H4 in H0. inversion H0. rewrite H6. assumption.
+      + rewrite H1 in H. inversion H.
+    - intros H. inversion H.
+      + inversion H7.
+      + inversion H7.
+  Qed.
   
 End SmokeTest.
 
