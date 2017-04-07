@@ -53,28 +53,34 @@ Inductive bs_int : stmt -> conf -> conf -> Prop :=
 where "c1 == s ==> c2" := (bs_int s c1 c2).
 
 (* Big-step semantics is deterministic *)
-(* Note: DB did not prove this yet     *)
 Lemma bs_int_deterministic : forall (c c1 c2 : conf) (s : stmt), c == s ==> c1 -> c == s ==> c2 -> c1 = c2.
 Proof. admit. Admitted.
 
 Reserved Notation "s1 '~~~' s2" (at level 0).
 
 Inductive bs_equivalent: stmt -> stmt -> Prop :=
-  bs_eq_intro: forall (s1 s2 : stmt) (c c' : conf), (c == s1 ==> c' <-> c == s2 ==> c') -> s1 ~~~ s2
+  bs_eq_intro: forall (s1 s2 : stmt), 
+                 (forall (c c' : conf), c == s1 ==> c' <-> c == s2 ==> c') -> s1 ~~~ s2
 where "s1 '~~~' s2" := (bs_equivalent s1 s2).
 
 Module SmokeTest.
+
+  Lemma seq_assoc : forall (s1 s2 s3 : stmt) (c c' : conf),
+                      ((s1 ;; s2) ;; s3) ~~~ (s1 ;; (s2 ;; s3)).
+  Proof. admit. Admitted.
+
+  Lemma while_unfolds : forall (e : expr) (s : stmt) (c c' : conf),
+                          (WHILE e DO s END) ~~~ (COND e THEN s ;; WHILE e DO s END ELSE SKIP END).
+  Proof. admit. Admitted.    
 
   Lemma while_false : forall (e : expr) (s : stmt) (st : state Z) (i o : list Z) (c : conf),
                         c == WHILE e DO s END ==> (st, i, o) -> [| e |] st => Z.zero.
   Proof. admit. Admitted.
 
-  Definition X := Id 1.
-  Definition Y := Id 2.
   Definition True := Nat 1.
 
-  Lemma loop_eq_undefined : (WHILE True DO SKIP END) ~~~ (X ::= Var Y).
-  Proof. admit. Admitted.  
+  Lemma loop_eq_undefined : (WHILE True DO SKIP END) ~~~ (COND (Nat 3) THEN SKIP ELSE SKIP END).
+  Proof. admit. Admitted.
   
 End SmokeTest.
 
