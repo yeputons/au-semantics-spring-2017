@@ -1,6 +1,8 @@
 Require Import List.
 Import ListNotations.
 Require Import Omega.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Relations.Relation_Definitions.
 
 Require Export BigZ.
 Require Export Id.
@@ -96,6 +98,15 @@ Inductive bs_equivalent: stmt -> stmt -> Prop :=
   bs_eq_intro: forall (s1 s2 : stmt), 
                  (forall (c c' : conf), c == s1 ==> c' <-> c == s2 ==> c') -> s1 ~~~ s2
 where "s1 '~~~' s2" := (bs_equivalent s1 s2).
+
+Instance : Equivalence bs_equivalent.
+Proof.
+  split; constructor; intros c c'; constructor; intros Hc;
+    try assumption;
+    try (inversion_clear H; apply H0; assumption).
+    - inversion_clear H as [a b H']. inversion H0 as [a b H'']. apply H''. apply H'. assumption.
+    - inversion_clear H as [a b H']. inversion H0 as [a b H'']. apply H'. apply H''. assumption.
+Qed.
 
 Ltac apply_seq_all :=
   match goal with
@@ -195,6 +206,16 @@ Inductive contextual_equivalent: stmt -> stmt -> Prop :=
   ceq_intro : forall (s1 s2 : stmt),
                 (forall (C : Context), (C <~ s1) ~~~ (C <~ s2)) -> s1 ~c~ s2
 where "s1 '~c~' s2" := (contextual_equivalent s1 s2).
+
+Instance : Equivalence contextual_equivalent.
+Proof.
+  constructor; constructor; intros C.
+  - constructor. split; intros; assumption.
+  - symmetry. inversion H as [a b H']. apply H'.
+  - transitivity (C <~ y).
+    + inversion H as [a b H']. apply H'.
+    + inversion H0 as [a b H0']. apply H0'.
+Qed.
 
 (* Contextual equivalence is equivalent to the semantic one *)
 Lemma eq_eq_ceq: forall (s1 s2 : stmt), s1 ~~~ s2 <-> s1 ~c~ s2.
