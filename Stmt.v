@@ -99,11 +99,11 @@ where "s1 '~~~' s2" := (bs_equivalent s1 s2).
 
 Module SmokeTest.
 
-  Lemma seq_assoc : forall (s1 s2 s3 : stmt) (c c' : conf),
+  Lemma seq_assoc : forall (s1 s2 s3 : stmt),
                       ((s1 ;; s2) ;; s3) ~~~ (s1 ;; (s2 ;; s3)).
   Proof. admit. Admitted.
 
-  Lemma while_unfolds : forall (e : expr) (s : stmt) (c c' : conf),
+  Lemma while_unfolds : forall (e : expr) (s : stmt),
                           (WHILE e DO s END) ~~~ (COND e THEN s ;; WHILE e DO s END ELSE SKIP END).
   Proof. admit. Admitted.    
 
