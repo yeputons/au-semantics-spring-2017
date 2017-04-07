@@ -108,6 +108,32 @@ Proof.
     - inversion_clear H as [a b H']. inversion H0 as [a b H'']. apply H'. apply H''. assumption.
 Qed.
 
+Ltac rewrite_bs_equivalent H :=
+  match type of H with
+  | ?s1 ~~~ ?s2 =>
+    match goal with
+    | |- ?c1 == ?s2 ==> ?c2 =>
+      let a := fresh in
+      let b := fresh in
+      let H' := fresh in
+      let c := fresh in
+      let d := fresh in
+      inversion H as [a b H' c d]; apply H'; clear d c H' a b
+    | |- ?c1 == ?s1 ==> ?c2 =>
+      let a := fresh in
+      let b := fresh in
+      let H' := fresh in
+      let c := fresh in
+      let d := fresh in
+      inversion H as [a b H' c d]; apply H'; clear d c H' a b
+    end
+  end.
+
+Ltac inversion_seq_all :=
+  match goal with
+  | H: _ == _;; _ ==> _ |- _ => inversion_clear H; try inversion_seq_all
+  end.
+
 Ltac apply_seq_all :=
   match goal with
   | H: ?c1 == ?s1 ==> ?c2 |- ?c1 == ?s1;; _ ==> _ =>
@@ -117,10 +143,16 @@ Ltac apply_seq_all :=
   end.
 
 Module SmokeTest.
-  Ltac inversion_seq_all :=
-    match goal with
-    | H: _ == _;; _ ==> _ |- _ => inversion_clear H; try inversion_seq_all
-    end.
+  Lemma bs_equivalent_1 : forall (s1 s2 : stmt) (c1 c2 : conf),
+      (s1 ~~~ s2) -> (c1 == s1 ==> c2) -> (c1 == s2 ==> c2).
+  Proof.
+    intros. rewrite_bs_equivalent H. assumption.
+  Qed.
+  Lemma bs_equivalent_2 : forall (s1 s2 : stmt) (c1 c2 : conf),
+      (s2 ~~~ s1) -> (c1 == s1 ==> c2) -> (c1 == s2 ==> c2).
+  Proof.
+    intros. rewrite_bs_equivalent H. assumption.
+  Qed.
 
   Lemma seq_assoc : forall (s1 s2 s3 : stmt),
                       ((s1 ;; s2) ;; s3) ~~~ (s1 ;; (s2 ;; s3)).
