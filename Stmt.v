@@ -249,9 +249,46 @@ Proof.
     + inversion H0 as [a b H0']. apply H0'.
 Qed.
 
+Ltac apply_in_some x :=
+  match goal with
+  | H : _ |- _ => apply x in H
+  end.
+
 (* Contextual equivalence is equivalent to the semantic one *)
 Lemma eq_eq_ceq: forall (s1 s2 : stmt), s1 ~~~ s2 <-> s1 ~c~ s2.
-Proof. admit. Admitted.
+Proof.
+  intros s1 s2; split; intros H.
+(*  { (* ~~~ -> ~c~ *)
+    constructor. intros C. constructor. intros c c'. split.
+    intros H'.
+    intros H''. rewrite_bs_equivalent H''. rewrite H
+  }*)
+  { (* ~~~ -> ~c~ *)
+    constructor. intros C. induction C; simpl; try assumption; constructor; intros c c'.
+    - split; intros H'; inversion_seq_all; inversion IHC as [a b IHC']; apply_in_some IHC'; apply_seq_all.
+    - split; intros H'; inversion_seq_all; inversion IHC as [a b IHC']; apply_in_some IHC'; apply_seq_all.
+    - split; (intros H'; inversion H';
+          (apply bs_If_True + apply bs_If_False); solve [assumption|rewrite_bs_equivalent IHC; assumption]).
+    - split; (intros H'; inversion H';
+          (apply bs_If_True + apply bs_If_False); solve [assumption|rewrite_bs_equivalent IHC; assumption]).
+    - split; (
+        intros H';
+        [remember (WHILE e DO C <~ s1 END) as L + remember (WHILE e DO C <~ s2 END) as L];
+        induction H'; inversion HeqL;
+        [ apply bs_While_True with c';
+          [ rewrite <-H2; assumption
+          | rewrite_bs_equivalent IHC; congruence
+          | apply IHH'2; congruence ]
+        | apply bs_While_False; congruence ]
+      ).
+  }
+  { (* ~c~ -> ~~~ *)
+    inversion H.
+    cut ((Hole <~ s1) ~~~ (Hole <~ s2)).
+    + simpl. intros. assumption.
+    + apply H0.
+  }
+Qed.
 
 (* CPS-style semantics *)
 Inductive cont : Type := 
