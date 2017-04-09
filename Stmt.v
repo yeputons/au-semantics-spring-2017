@@ -258,11 +258,6 @@ Ltac apply_in_some x :=
 Lemma eq_eq_ceq: forall (s1 s2 : stmt), s1 ~~~ s2 <-> s1 ~c~ s2.
 Proof.
   intros s1 s2; split; intros H.
-(*  { (* ~~~ -> ~c~ *)
-    constructor. intros C. constructor. intros c c'. split.
-    intros H'.
-    intros H''. rewrite_bs_equivalent H''. rewrite H
-  }*)
   { (* ~~~ -> ~c~ *)
     constructor. intros C. induction C; simpl; try assumption; constructor; intros c c'.
     - split; intros H'; inversion_seq_all; inversion IHC as [a b IHC']; apply_in_some IHC'; apply_seq_all.
