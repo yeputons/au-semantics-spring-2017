@@ -339,10 +339,118 @@ Inductive cps_int : cont -> cont -> conf -> conf -> Prop :=
                       k |-- (st, i, o) -- !(WHILE e DO s END) --> c'
 where "k |-- c1 -- s --> c2" := (cps_int k s c1 c2).
 
+Lemma kapp_nil_r: forall (k : cont),
+  (k @ KEmpty) = k.
+Proof.
+  intros k. destruct k; reflexivity.
+Qed.
+
+Lemma cps_cont_to_seq: forall (c1 c2: conf) (k1 k2 k3 : cont),
+  (k2 @ k3 |-- c1 -- k1 --> c2) ->
+  (k3 |-- c1 -- k1 @ k2 --> c2).
+Proof.
+  intros c1 c2 k1 k2 k3 H.
+  destruct k1 as [ | s1]; destruct k2 as [ | s2].
+  { assumption. }
+  { inversion H. destruct k3; inversion H1. }
+  { assumption. }
+  unfold Kapp.
+  apply cps_Seq.
+  assumption.
+Qed.
+
+Lemma bs_int_to_cps_int_cont: forall (c1 c2 c3: conf) (s : stmt) (k : cont),
+  c1 == s ==> c2 ->
+  k |-- c2 -- !(SKIP) --> c3 ->
+  k |-- c1 -- !(s) --> c3.
+Proof.
+  intros c1 c2 c3 s k H12.
+  generalize dependent c3.
+  generalize dependent k.
+  induction H12; intros k c3 H23; inversion H23.
+  - assumption.
+  - apply cps_Assn with z; assumption.
+  - apply cps_Read; assumption.
+  - apply cps_Write with z; assumption.
+  - apply cps_Seq.
+    apply IHbs_int1. apply cps_Skip. apply cps_cont_to_seq.
+    apply IHbs_int2. rewrite kapp_nil_r. assumption.
+  - apply cps_If_True. assumption. apply IHbs_int. assumption.
+  - apply cps_If_False. assumption. apply IHbs_int. assumption.
+  - apply cps_While_True. assumption.
+    apply IHbs_int1. apply cps_Skip. apply cps_cont_to_seq.
+    apply IHbs_int2. rewrite kapp_nil_r. assumption.
+  - apply cps_While_False; assumption.
+Qed.
+
 Lemma bs_int_to_cps_int: forall (st : state Z) (i o : list Z) (c' : conf) (s : stmt),
   (st, i, o) == s ==> c' -> KEmpty |-- (st, i, o) -- !s --> c'.
-Proof. admit. Admitted.
+Proof.
+  intros st i o c' s B.
+  apply bs_int_to_cps_int_cont with c'.
+  - assumption.
+  - apply cps_Skip. apply cps_Empty.
+Qed.
+
+Definition Ktos (k : cont) :=
+  match k with
+  | KEmpty => SKIP
+  | KStmt s => s
+  end.
+
+Lemma cps_int_to_bs_int_cont : forall (c1 c2 : conf) (k1 k2 : cont),
+  k2 |-- c1 -- k1 --> c2 -> c1 == Ktos (k1 @@ k2) ==> c2.
+Proof.
+  intros c1 c2 k1 k2 H.
+  induction H; try (destruct k; unfold Kapp; unfold Ktos).
+  - apply bs_Skip.
+  - inversion H. apply bs_Skip.
+  - apply bs_Seq with c. apply bs_Skip. apply IHcps_int.
+
+  - inversion H0. apply bs_Assign. assumption.
+  - apply bs_Seq with (s[x<-n], i, o). apply bs_Assign. assumption. assumption.
+
+  - inversion H. apply bs_Read.
+  - apply bs_Seq with (s[x<-z], i, o). apply bs_Read. assumption.
+
+  - inversion H0. apply bs_Write. assumption.
+  - apply bs_Seq with (s, i, z::o). apply bs_Write. assumption. assumption.
+
+  - apply IHcps_int.
+  - inversion IHcps_int.
+    inversion H5.
+    apply bs_Seq with c'1.
+    apply bs_Seq with c'0; assumption.
+    assumption.
+
+  - apply bs_If_True; assumption.
+  - inversion IHcps_int.
+    apply bs_Seq with c'0.
+    apply bs_If_True; assumption.
+    assumption.
+
+  - apply bs_If_False; assumption.
+  - inversion IHcps_int.
+    apply bs_Seq with c'0.
+    apply bs_If_False; assumption.
+    assumption.
+
+  - inversion IHcps_int. apply bs_While_True with c'0; assumption.
+  - inversion IHcps_int. inversion H6.
+    apply bs_Seq with c'1.
+    apply bs_While_True with c'0; assumption.
+    assumption.
+
+  - inversion IHcps_int. apply bs_While_False. assumption.
+  - apply bs_Seq with (st, i, o).
+    apply bs_While_False; assumption.
+    assumption.
+Qed.
 
 Lemma cps_int_to_bs_int: forall (st : state Z) (i o : list Z) (c' : conf) (s : stmt),
   KEmpty |-- (st, i, o) -- !s --> c' -> (st, i, o) == s ==> c'.
-Proof. admit. Admitted.
+Proof.
+  intros st i o c' s H.
+  apply (cps_int_to_bs_int_cont (st, i, o) c' !s KEmpty).
+  assumption.
+Qed.
