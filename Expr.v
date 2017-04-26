@@ -159,91 +159,9 @@ Proof.
     inversion H.
     assumption.
   }
-  (* TODO: How to make it non-repeatable? *)
-  { intros z id H. inversion_clear H.
-    intros Hid. inversion_clear Hid. destruct H as [H|H].
-    apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-    apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-  { intros z id H. inversion_clear H.
-    intros Hid. inversion_clear Hid. destruct H as [H|H].
-    apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-    apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-  { intros z id H. inversion_clear H.
-    intros Hid. inversion_clear Hid. destruct H as [H|H].
-    apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-    apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-  { intros z id H. inversion_clear H.
-    intros Hid. inversion_clear Hid. destruct H as [H|H].
-    apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-    apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-  { intros z id H. inversion_clear H.
-    intros Hid. inversion_clear Hid. destruct H as [H|H].
-    apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-    apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. } }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. } }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. } }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. } }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. } }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. } }
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }}
-  { intros z id H. inversion_clear H.
-    {
-      intros Hid. inversion_clear Hid. destruct H as [H|H].
-      apply (IHe1 za id) in H0. destruct H0. exists x. auto. auto.
-      apply (IHe2 zb id) in H1. destruct H1. exists x. auto. auto. }}
+  { intros z id H Hid. inversion Hid. inversion H4.
+    - inversion H; apply (IHe1 za id); assumption.
+    - inversion H; apply (IHe2 zb id); assumption. }
 Qed.
 
 (* If a variable in expression is undefined in some state, then the expression
@@ -255,45 +173,10 @@ Proof.
   induction e.
   { intros. exfalso. inversion H. }
   { intros. intro. inversion H. rewrite H2 in H1. inversion H1. remember (H0 z). contradiction. }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
-  { intros. intro. inversion_clear H. inversion_clear H2.
-    {remember (IHe1 s id). inversion_clear H1. apply n with za in H. contradiction. assumption. }
-    {remember (IHe2 s id). inversion_clear H1. apply n with zb in H. contradiction. assumption. } }
+  { intros s id H Huf z Hw.
+    inversion_clear H. inversion H0.
+    - inversion Hw; apply (IHe1 s id H Huf za); assumption.
+    - inversion Hw; apply (IHe2 s id H Huf zb); assumption. }
 Qed.
 
 (* The evaluation relation is deterministic *)
@@ -303,94 +186,28 @@ Proof.
   induction e.
   { intros. inversion H. inversion H0. auto. }
   { intros. inversion_clear H. inversion_clear H0. apply state_deterministic with s i. assumption. assumption. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H4. reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H4. reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H4. reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H4. reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H4. reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    reflexivity.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    exfalso. rewrite H0 in H3. rewrite H6 in H3. contradiction.
-    inversion H0.
-    { exfalso. apply (IHe1 s za za0) in H5. apply (IHe2 s zb zb0) in H6. rewrite H5 in H3. rewrite H6 in H3. contradiction. assumption. assumption. }
-    reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    reflexivity.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    exfalso. rewrite H0 in H3. rewrite H6 in H3. contradiction.
-    inversion H0.
-    { exfalso. apply (IHe1 s za za0) in H5. apply (IHe2 s zb zb0) in H6. rewrite H5 in H3. rewrite H6 in H3. contradiction. assumption. assumption. }
-    reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    reflexivity.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    exfalso. rewrite H0 in H3. rewrite H6 in H3. contradiction.
-    inversion H0.
-    { exfalso. apply (IHe1 s za za0) in H5. apply (IHe2 s zb zb0) in H6. rewrite H5 in H3. rewrite H6 in H3. contradiction. assumption. assumption. }
-    reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    reflexivity.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    exfalso. rewrite H0 in H3. rewrite H6 in H3. contradiction.
-    inversion H0.
-    { exfalso. apply (IHe1 s za za0) in H5. apply (IHe2 s zb zb0) in H6. rewrite H5 in H3. rewrite H6 in H3. contradiction. assumption. assumption. }
-    reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    reflexivity.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    exfalso. rewrite H0 in H3. rewrite H6 in H3. contradiction.
-    inversion H0.
-    { exfalso. apply (IHe1 s za za0) in H5. apply (IHe2 s zb zb0) in H6. rewrite H5 in H3. rewrite H6 in H3. contradiction. assumption. assumption. }
-    reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    reflexivity.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    exfalso. rewrite H0 in H3. rewrite H6 in H3. contradiction.
-    inversion H0.
-    { exfalso. apply (IHe1 s za za0) in H5. apply (IHe2 s zb zb0) in H6. rewrite H5 in H3. rewrite H6 in H3. contradiction. assumption. assumption. }
-    reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H8. reflexivity. }
-  { intros. inversion_clear H. inversion_clear H0.
-    assert (za = za0). { apply (IHe1 s za za0). assumption. assumption. }
-    assert (zb = zb0). { apply (IHe2 s zb zb0). assumption. assumption. }
-    rewrite H0. rewrite H8. reflexivity. }
+  { intros s z1 z2 H1 H2.
+    destruct b;
+    inversion_clear H1; inversion_clear H2; try solve
+    [ reflexivity
+    | match goal with
+      | Ha: [|e1|] s => ?za, Ha0: [|e1|] s => ?za0
+      , Hb: [|e2|] s => ?zb, Hb0: [|e2|] s => ?zb0
+      |- _ =>
+        rewrite (IHe1 s za za0 Ha Ha0);
+        rewrite (IHe2 s zb zb0 Hb Hb0);
+        reflexivity
+
+      | Ha: [|e1|] s => ?za, Ha0: [|e1|] s => ?za0
+      , Hb: [|e2|] s => ?zb, Hb0: [|e2|] s => ?zb0
+      , H1: _%Z, H2: _%Z
+      |- _ =>
+        exfalso;
+        rewrite (IHe1 s za za0 Ha Ha0) in H1;
+        rewrite (IHe2 s zb zb0 Hb Hb0) in H2;
+        solve [contradiction | omega]
+      end
+    ]. }
 Qed.
 
 (* Equivalence of states w.r.t. an identifier *)
@@ -410,110 +227,33 @@ Proof.
     auto.
     apply v_Var.
     assumption. }
-  { intros.
-    inversion_clear H0. apply bs_Add.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_Add. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_Add. right. assumption. assumption. } }
-  { intros.
-    inversion_clear H0. apply bs_Sub.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_Sub. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_Sub. right. assumption. assumption. } }
-  { intros.
-    inversion_clear H0. apply bs_Mul.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_Mul. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_Mul. right. assumption. assumption. } }
-  { intros.
-    inversion_clear H0. apply bs_Div.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_Div. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_Div. right. assumption. assumption. } }
-  { intros.
-    inversion_clear H0. apply bs_Mod.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_Mod. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_Mod. right. assumption. assumption. } }
-  { intros.
-    inversion_clear H0.
-    { apply (bs_Le_T s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Le. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Le. right. assumption. assumption. }
-      assumption. }
-    { apply (bs_Le_F s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Le. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Le. right. assumption. assumption. }
-      assumption. } }
-  { intros.
-    inversion_clear H0.
-    { apply (bs_Lt_T s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Lt. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Lt. right. assumption. assumption. }
-      assumption. }
-    { apply (bs_Lt_F s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Lt. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Lt. right. assumption. assumption. }
-      assumption. } }
-  { intros.
-    inversion_clear H0.
-    { apply (bs_Ge_T s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Ge. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Ge. right. assumption. assumption. }
-      assumption. }
-    { apply (bs_Ge_F s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Ge. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Ge. right. assumption. assumption. }
-      assumption. } }
-  { intros.
-    inversion_clear H0.
-    { apply (bs_Gt_T s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Gt. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Gt. right. assumption. assumption. }
-      assumption. }
-    { apply (bs_Gt_F s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Gt. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Gt. right. assumption. assumption. }
-      assumption. } }
-  { intros.
-    inversion_clear H0.
-    { apply (bs_Eq_T s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Eq. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Eq. right. assumption. assumption. }
-      assumption. }
-    { apply (bs_Eq_F s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Eq. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Eq. right. assumption. assumption. }
-      assumption. } }
-  { intros.
-    inversion_clear H0.
-    { apply (bs_Ne_T s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Ne. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Ne. right. assumption. assumption. }
-      assumption. }
-    { apply (bs_Ne_F s2 e1 e2 za zb).
-      { apply (IHe1 s1 s2 za). intros. apply H. assumption. apply v_Ne. left. assumption. assumption. }
-      { apply (IHe2 s1 s2 zb). intros. apply H. assumption. apply v_Ne. right. assumption. assumption. }
-      assumption. } }
-  { intros.
-    inversion_clear H0. apply bs_And.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_And. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_And. right. assumption. assumption. }
-      assumption. assumption. }
-  { intros.
-    inversion_clear H0. apply bs_Or.
-    { apply (IHe1 s1 s2 za). intros.
-      apply H. assumption. apply v_Or. left. assumption. assumption. }
-    { apply (IHe2 s1 s2 zb). intros.
-      apply H. assumption. apply v_Or. right. assumption. assumption. }
-      assumption. assumption. }
+  {
+    intros s1 s2 z Hv H.
+    inversion_clear H;
+    assert (He1: [|e1|] s2 => za);
+    assert (He2: [|e2|] s2 => zb);
+    try (
+      apply IHe1 with s1 + apply IHe2 with s1; solve
+      [ intros id v H';
+        apply Hv; solve
+        [ apply v
+        | constructor; left + right; assumption
+        | assumption ]
+      | assumption ] );
+    try (constructor; assumption).
+    - apply bs_Le_T with za zb; assumption.
+    - apply bs_Le_F with za zb; assumption.
+    - apply bs_Lt_T with za zb; assumption.
+    - apply bs_Lt_F with za zb; assumption.
+    - apply bs_Ge_T with za zb; assumption.
+    - apply bs_Ge_F with za zb; assumption.
+    - apply bs_Gt_T with za zb; assumption.
+    - apply bs_Gt_F with za zb; assumption.
+    - apply bs_Eq_T with za zb; assumption.
+    - apply bs_Eq_F with za zb; assumption.
+    - apply bs_Ne_T with za zb; assumption.
+    - apply bs_Ne_F with za zb; assumption.
+  }
 Qed.
 
 
@@ -642,98 +382,49 @@ Proof.
   intros e1 e2 C.
   induction C.
   { intros. destruct H. apply (H n s). rewrite <-(ceq_hole_eq e1). assumption. }
+  { intros n s He H.
+    assert (H': forall e', BopL b C e <~ e' = Bop b (C <~ e') e). reflexivity.
+    rewrite H' in H.
+    rewrite H'.
 
-  { intros. assert (forall e1, (AddL C e <~ e1) = (Add (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Add. apply IHC. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (SubL C e <~ e1) = (Sub (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Sub. apply IHC. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (MulL C e <~ e1) = (Mul (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Mul. apply IHC. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (DivL C e <~ e1) = (Div (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Div. apply IHC. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (ModL C e <~ e1) = (Mod (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Mod. apply IHC. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (LeL C e <~ e1) = (Le (C <~ e1) e)). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Le_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
-    apply (bs_Le_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (LtL C e <~ e1) = (Lt (C <~ e1) e)). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Lt_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
-    apply (bs_Lt_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (GeL C e <~ e1) = (Ge (C <~ e1) e)). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Ge_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
-    apply (bs_Ge_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (GtL C e <~ e1) = (Gt (C <~ e1) e)). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Gt_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
-    apply (bs_Gt_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (EqL C e <~ e1) = (Eq (C <~ e1) e)). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Eq_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
-    apply (bs_Eq_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (NeL C e <~ e1) = (Ne (C <~ e1) e)). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Ne_T s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption.
-    apply (bs_Ne_F s (C <~ e2) e za zb). apply (IHC za s). assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (AndL C e <~ e1) = (And (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_And. apply IHC. assumption. assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (OrL C e <~ e1) = (Or (C <~ e1) e)). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Or. apply IHC. assumption. assumption. assumption. assumption. assumption. }
-
-  { intros. assert (forall e1, (AddR e C <~ e1) = (Add e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Add. assumption. apply IHC. assumption. assumption. }
-  { intros. assert (forall e1, (SubR e C <~ e1) = (Sub e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Sub. assumption. apply IHC. assumption. assumption. }
-  { intros. assert (forall e1, (MulR e C <~ e1) = (Mul e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Mul. assumption. apply IHC. assumption. assumption. }
-  { intros. assert (forall e1, (DivR e C <~ e1) = (Div e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Div. assumption. apply IHC. assumption. assumption. }
-  { intros. assert (forall e1, (ModR e C <~ e1) = (Mod e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Mod. assumption. apply IHC. assumption. assumption. }
-  { intros. assert (forall e1, (LeR e C <~ e1) = (Le e (C <~ e1))). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Le_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
-    apply (bs_Le_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
-  { intros. assert (forall e1, (LtR e C <~ e1) = (Lt e (C <~ e1))). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Lt_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
-    apply (bs_Lt_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
-  { intros. assert (forall e1, (GeR e C <~ e1) = (Ge e (C <~ e1))). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Ge_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
-    apply (bs_Ge_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
-  { intros. assert (forall e1, (GtR e C <~ e1) = (Gt e (C <~ e1))). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Gt_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
-    apply (bs_Gt_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
-  { intros. assert (forall e1, (EqR e C <~ e1) = (Eq e (C <~ e1))). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Eq_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
-    apply (bs_Eq_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
-  { intros. assert (forall e1, (NeR e C <~ e1) = (Ne e (C <~ e1))). auto.
-    rewrite H1 in H0. rewrite H1. inversion_clear H0.
-    apply (bs_Ne_T s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption.
-    apply (bs_Ne_F s e (C <~ e2) za zb). assumption. apply (IHC zb s). assumption. assumption. assumption. }
-  { intros. assert (forall e1, (AndR e C <~ e1) = (And e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_And. assumption. apply IHC. assumption. assumption. assumption. assumption. }
-  { intros. assert (forall e1, (OrR e C <~ e1) = (Or e (C <~ e1))). auto.
-    rewrite H1 in H0. inversion_clear H0.
-    rewrite H1. apply bs_Or. assumption. apply IHC. assumption. assumption. assumption. assumption. }
+    inversion H; try (
+       constructor
+    || apply bs_Le_T with za zb
+    || apply bs_Le_F with za zb
+    || apply bs_Lt_T with za zb
+    || apply bs_Lt_F with za zb
+    || apply bs_Ge_T with za zb
+    || apply bs_Ge_F with za zb
+    || apply bs_Gt_T with za zb
+    || apply bs_Gt_F with za zb
+    || apply bs_Eq_T with za zb
+    || apply bs_Eq_F with za zb
+    || apply bs_Ne_T with za zb
+    || apply bs_Ne_F with za zb
+    ;
+    solve [ apply IHC; assumption | assumption ]
+    ). }
+  { intros n s He H.
+    assert (H': forall e', BopR b e C <~ e' = Bop b e (C <~ e')). reflexivity.
+    rewrite H' in H.
+    rewrite H'.
+    inversion H; try (
+       constructor
+    || apply bs_Le_T with za zb
+    || apply bs_Le_F with za zb
+    || apply bs_Lt_T with za zb
+    || apply bs_Lt_F with za zb
+    || apply bs_Ge_T with za zb
+    || apply bs_Ge_F with za zb
+    || apply bs_Gt_T with za zb
+    || apply bs_Gt_F with za zb
+    || apply bs_Eq_T with za zb
+    || apply bs_Eq_F with za zb
+    || apply bs_Ne_T with za zb
+    || apply bs_Ne_F with za zb
+    ;
+    solve [ apply IHC; assumption | assumption ]
+    ). }
 Qed.
 
 (* Contextual equivalence is equivalent to the semantic one *)
