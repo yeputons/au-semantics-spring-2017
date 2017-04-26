@@ -139,19 +139,7 @@ Reserved Notation "x ? e" (at level 0).
 (* Set of variables is an expression *)
 Inductive V : expr -> id -> Prop := 
   v_Var : forall (id : id), id ? (Var id)
-| v_Add : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [+]  b)
-| v_Sub : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [-]  b)
-| v_Mul : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [*]  b)
-| v_Div : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [/]  b)
-| v_Mod : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [%]  b)
-| v_Le  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [<=] b)
-| v_Lt  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [<]  b)
-| v_Ge  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [>=] b)
-| v_Gt  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [>]  b)
-| v_Eq  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [==] b)
-| v_Ne  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [/=] b)
-| v_And : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [&]  b)
-| v_Or  : forall (id : id) (a b : expr), id ? a \/ id ? b -> id ? (a [\/] b)
+| v_Bop : forall (id : id) (op : bop) (a b : expr), id ? a \/ id ? b -> id ? (Bop op a b)
 where "x ? e" := (V e x).
 
 (* If an expression is defined in some state, then each its' variable is
@@ -593,7 +581,7 @@ Fixpoint plug (C : Context) (e : expr) : expr :=
   match C with
   | Hole => e
   | BopL b C e1 => Bop b (plug C e) e1
-  | BopR b e1 C => Bop b (plug C e) e1
+  | BopR b e1 C => Bop b e1 (plug C e)
   end.  
 
 Notation "C '<~' e" := (plug C e) (at level 43, no associativity).
