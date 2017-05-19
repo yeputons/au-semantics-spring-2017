@@ -11,7 +11,9 @@ Require Export Expr.
 Fixpoint suffix (A : Type) (p : list A) (n : nat) :=
   match n with
   | 0   => p
-  | S k => match p with [] => [] | h :: tl => h :: suffix A tl k end
+  | S k => match p with
+    | [] => []
+    | h :: tl => suffix A tl k end
   end.
 
 (* Stack machine instructions *)
