@@ -116,6 +116,38 @@ Fixpoint compile_expr (e : expr) :=
   end.
 
 (* Partial correctness of expression compiler *)
+Lemma compiled_expr_correct_cont:
+  forall (e : expr) (st : state Z) (s i o : list Z) (n : Z)
+  (p p': prog) (c' : conf),
+  [| e |] st => n ->
+  p |- (n::s, st, i, o) -- p' --> c' ->
+  p |- (s, st, i, o) -- (compile_expr e) ++ p' --> c'.
+Proof.
+  intros e st s i o n p p' c' H.
+  revert s i o p p' c'.
+  induction H;
+  intros st inp oup p p' c'; simpl;
+  try solve [
+    apply sm_Const
+  | apply sm_Load; assumption
+  | intros HE;
+    rewrite <-app_assoc;
+    rewrite <-app_assoc;
+    apply IHbs_eval1;
+    apply IHbs_eval2;
+    constructor;
+    assumption
+  ].
+Qed.
+
 Lemma compiled_expr_correct: forall (e : expr) (st : state Z) (s i o : list Z) (n : Z),
                                [| e |] st => n -> (compile_expr e) |- (s, st, i, o) -- (compile_expr e) --> (n::s, st, i, o).
-Proof. admit. Admitted.
+Proof.
+  intros e st s i o n H.
+  assert (He : compile_expr e ++ [] = compile_expr e).
+  apply app_nil_r.
+  rewrite <-He.
+  apply (compiled_expr_correct_cont e st s i o n (compile_expr e ++ []) nil (n::s, st, i, o)).
+  assumption.
+  apply sm_End.
+Qed.
