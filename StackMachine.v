@@ -42,70 +42,70 @@ Notation "p '<[' k ':' n ]>" := (subprogram p k n) (at level 39, no associativit
 Definition conf := (list Z * state Z * list Z * list Z)%type.
 
 (* Big-step evaluation relation *)
-Reserved Notation "p '|-' c1 '--' q '-->' c2" (at level 0).
+Reserved Notation "p '|--' c1 '--' q '-->' c2" (at level 0).
 Notation "st [ x '<-' y ]" := (update Z st x y) (at level 0).
 
 Inductive sm_int : prog -> conf -> prog -> conf -> Prop :=
-| sm_End   : forall (p : prog) (c : conf), p |- c -- [] --> c
+| sm_End   : forall (p : prog) (c : conf), p |-- c -- [] --> c
 | sm_Read  : forall (p q : prog) (z : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (z::s, m, i, o) -- q --> c' -> p |- (s, m, z::i, o) -- R::q --> c'
+               p |-- (z::s, m, i, o) -- q --> c' -> p |-- (s, m, z::i, o) -- R::q --> c'
 | sm_Write : forall (p q : prog) (z : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (s, m, i, z::o) -- q --> c' -> p |- (z::s, m, i, o) -- W::q --> c'
+               p |-- (s, m, i, z::o) -- q --> c' -> p |-- (z::s, m, i, o) -- W::q --> c'
 | sm_Load  : forall (p q : prog) (x : id) (z : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               m / x => z -> p |- (z::s, m, i, o) -- q --> c' -> p |- (s, m, i, o) -- (L x)::q --> c'
+               m / x => z -> p |-- (z::s, m, i, o) -- q --> c' -> p |-- (s, m, i, o) -- (L x)::q --> c'
 | sm_Store : forall (p q : prog) (x : id) (z : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (s, m [x <- z], i, o) -- q --> c' -> p |- (z::s, m, i, o) -- (S x)::q --> c'
+               p |-- (s, m [x <- z], i, o) -- q --> c' -> p |-- (z::s, m, i, o) -- (S x)::q --> c'
 | sm_Add   : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- ((x + y)%Z::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Add)::q --> c'
+               p |-- ((x + y)%Z::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Add)::q --> c'
 | sm_Sub   : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- ((x - y)%Z::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Sub)::q --> c'
+               p |-- ((x - y)%Z::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Sub)::q --> c'
 | sm_Mul   : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- ((x * y)%Z::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Mul)::q --> c'
+               p |-- ((x * y)%Z::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Mul)::q --> c'
 | sm_Div   : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- ((Z.div x y)::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Div)::q --> c'
+               p |-- ((Z.div x y)::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Div)::q --> c'
 | sm_Mod   : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- ((Z.modulo x y)::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Mod)::q --> c'
+               p |-- ((Z.modulo x y)::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Mod)::q --> c'
 | sm_Le_T  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.le x y -> p |- (Z.one::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Le)::q --> c'
+               Z.le x y -> p |-- (Z.one::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Le)::q --> c'
 | sm_Le_F  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.gt x y -> p |- (Z.zero::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Le)::q --> c'
+               Z.gt x y -> p |-- (Z.zero::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Le)::q --> c'
 | sm_Ge_T  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.ge x y -> p |- (Z.one::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Ge)::q --> c'
+               Z.ge x y -> p |-- (Z.one::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Ge)::q --> c'
 | sm_Ge_F  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.lt x y -> p |- (Z.zero::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Ge)::q --> c'
+               Z.lt x y -> p |-- (Z.zero::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Ge)::q --> c'
 | sm_Lt_T  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.lt x y -> p |- (Z.one::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Lt)::q --> c'
+               Z.lt x y -> p |-- (Z.one::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Lt)::q --> c'
 | sm_Lt_F  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.ge x y -> p |- (Z.zero::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Lt)::q --> c'
+               Z.ge x y -> p |-- (Z.zero::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Lt)::q --> c'
 | sm_Gt_T  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.gt x y -> p |- (Z.one::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Gt)::q --> c'
+               Z.gt x y -> p |-- (Z.one::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Gt)::q --> c'
 | sm_Gt_F  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.le x y -> p |- (Z.zero::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Gt)::q --> c'
+               Z.le x y -> p |-- (Z.zero::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Gt)::q --> c'
 | sm_Eq_T  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.eq x y -> p |- (Z.one::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Eq)::q --> c'
+               Z.eq x y -> p |-- (Z.one::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Eq)::q --> c'
 | sm_Eq_F  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               ~ Z.eq x y -> p |- (Z.zero::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Eq)::q --> c'
+               ~ Z.eq x y -> p |-- (Z.zero::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Eq)::q --> c'
 | sm_Ne_T  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               ~ Z.eq x y -> p |- (Z.one::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Ne)::q --> c'
+               ~ Z.eq x y -> p |-- (Z.one::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Ne)::q --> c'
 | sm_Ne_F  : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               Z.eq x y -> p |- (Z.zero::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Ne)::q --> c'
+               Z.eq x y -> p |-- (Z.zero::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Ne)::q --> c'
 | sm_And   : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               zbool x -> zbool y -> p |- ((x * y)%Z::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B And)::q --> c'
+               zbool x -> zbool y -> p |-- ((x * y)%Z::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B And)::q --> c'
 | sm_Or    : forall (p q : prog) (x y : Z) (m : state Z) (s i o : list Z) (c' : conf), 
-               zbool x -> zbool y -> p |- ((zor x y)::s, m, i, o) -- q --> c' -> p |- (y::x::s, m, i, o) -- (B Or)::q --> c'
+               zbool x -> zbool y -> p |-- ((zor x y)::s, m, i, o) -- q --> c' -> p |-- (y::x::s, m, i, o) -- (B Or)::q --> c'
 | sm_Const : forall (p q : prog) (n : nat) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- ((Z.of_nat n)::s, m, i, o) -- q --> c' -> p |- (s, m, i, o) -- (C n)::q --> c'
+               p |-- ((Z.of_nat n)::s, m, i, o) -- q --> c' -> p |-- (s, m, i, o) -- (C n)::q --> c'
 | sm_J     : forall (p q : prog) (n : nat) (c c' : conf), 
-               p |- c -- p<[n]> --> c' -> p |- c -- (J n)::q --> c'
+               p |-- c -- p<[n]> --> c' -> p |-- c -- (J n)::q --> c'
 | sm_JT_T  : forall (p q : prog) (n : nat) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (s, m, i, o) -- p<[n]> --> c' -> p |- (Z.one::s, m, i, o) -- (JT n)::q --> c'
+               p |-- (s, m, i, o) -- p<[n]> --> c' -> p |-- (Z.one::s, m, i, o) -- (JT n)::q --> c'
 | sm_JT_F  : forall (p q : prog) (n : nat) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (s, m, i, o) -- q --> c' -> p |- (Z.zero::s, m, i, o) -- (JT n)::q --> c'
+               p |-- (s, m, i, o) -- q --> c' -> p |-- (Z.zero::s, m, i, o) -- (JT n)::q --> c'
 | sm_JF_T  : forall (p q : prog) (n : nat) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (s, m, i, o) -- q --> c' -> p |- (Z.one::s, m, i, o) -- (JT n)::q --> c'
+               p |-- (s, m, i, o) -- q --> c' -> p |-- (Z.one::s, m, i, o) -- (JT n)::q --> c'
 | sm_JF_F  : forall (p q : prog) (n : nat) (m : state Z) (s i o : list Z) (c' : conf), 
-               p |- (s, m, i, o) -- p<[n]> --> c' -> p |- (Z.zero::s, m, i, o) -- (JT n)::q --> c'
-where "p '|-' c1 '--' q '-->' c2" := (sm_int p c1 q c2).
+               p |-- (s, m, i, o) -- p<[n]> --> c' -> p |-- (Z.zero::s, m, i, o) -- (JT n)::q --> c'
+where "p '|--' c1 '--' q '-->' c2" := (sm_int p c1 q c2).
 
 (* Expression compiler *)
 Fixpoint compile_expr (e : expr) :=
@@ -120,8 +120,8 @@ Lemma compiled_expr_correct_cont:
   forall (e : expr) (st : state Z) (s i o : list Z) (n : Z)
   (p p': prog) (c' : conf),
   [| e |] st => n ->
-  p |- (n::s, st, i, o) -- p' --> c' ->
-  p |- (s, st, i, o) -- (compile_expr e) ++ p' --> c'.
+  p |-- (n::s, st, i, o) -- p' --> c' ->
+  p |-- (s, st, i, o) -- (compile_expr e) ++ p' --> c'.
 Proof.
   intros e st s i o n p p' c' H.
   revert s i o p p' c'.
@@ -141,7 +141,7 @@ Proof.
 Qed.
 
 Lemma compiled_expr_correct: forall (e : expr) (st : state Z) (s i o : list Z) (n : Z),
-                               [| e |] st => n -> (compile_expr e) |- (s, st, i, o) -- (compile_expr e) --> (n::s, st, i, o).
+                               [| e |] st => n -> (compile_expr e) |-- (s, st, i, o) -- (compile_expr e) --> (n::s, st, i, o).
 Proof.
   intros e st s i o n H.
   assert (He : compile_expr e ++ [] = compile_expr e).
