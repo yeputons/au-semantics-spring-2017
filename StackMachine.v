@@ -151,3 +151,81 @@ Proof.
   assumption.
   apply sm_End.
 Qed.
+
+Lemma compiled_expr_not_incorrect_cont:
+  forall (e : expr) (st : state Z) (s i o : list Z)
+  (p p' : prog) (c : conf),
+  p |-- (s, st, i, o) -- compile_expr e ++ p' --> c ->
+  exists (n : Z), [| e |] st => n /\ p |-- (n :: s, st, i, o) -- p' --> c.
+Proof.
+  intros e st.
+  induction e; intros s inp oup p p' c H; simpl in H.
+  { exists (Z.of_nat n). split.
+    - apply bs_Nat.
+    - inversion H. assumption. }
+  { inversion_clear H. exists z. split.
+    - apply bs_Var. assumption.
+    - assumption. }
+  {
+    rewrite <-app_assoc in H.
+    rewrite <-app_assoc in H.
+    apply IHe1 in H. inversion_clear H. inversion_clear H0.
+    apply IHe2 in H1. inversion_clear H1. inversion_clear H0.
+    inversion_clear H2;
+    try match goal with
+      | |- exists n : Z, [|Bop ?b' e1 e2|] st => (n) /\ _ =>
+        exists (match b' with
+        | Add => x + x0
+        | Sub => x - x0
+        | Mul => x * x0
+        | Div => Z.div x x0
+        | Mod => Z.modulo x x0
+        | And => x * x0
+        | Or  => zor x x0
+        | _ => 0
+        end)%Z;
+        split; try constructor; assumption
+      end.
+    - exists Z.one.  split; try apply bs_Le_T with x x0; assumption.
+    - exists Z.zero. split; try apply bs_Le_F with x x0; assumption.
+    - exists Z.one.  split; try apply bs_Ge_T with x x0; assumption.
+    - exists Z.zero. split; try apply bs_Ge_F with x x0; assumption.
+    - exists Z.one.  split; try apply bs_Lt_T with x x0; assumption.
+    - exists Z.zero. split; try apply bs_Lt_F with x x0; assumption.
+    - exists Z.one.  split; try apply bs_Gt_T with x x0; assumption.
+    - exists Z.zero. split; try apply bs_Gt_F with x x0; assumption.
+    - exists Z.one.  split; try apply bs_Eq_T with x x0; assumption.
+    - exists Z.zero. split; try apply bs_Eq_F with x x0; assumption.
+    - exists Z.one.  split; try apply bs_Ne_T with x x0; assumption.
+    - exists Z.zero. split; try apply bs_Ne_F with x x0; assumption.
+  }
+Qed.
+
+Lemma compiled_expr_not_incorrect:
+  forall (e : expr) (st : state Z) (s i o : list Z) (n : Z),
+  (compile_expr e) |-- (s, st, i, o) -- (compile_expr e) --> (n::s, st, i, o)
+  ->
+  [| e |] st => n.
+Proof.
+  intros e st s i o n H.
+  assert (He : compile_expr e ++ [] = compile_expr e).
+  apply app_nil_r.
+  rewrite <-He in H.
+  apply compiled_expr_not_incorrect_cont in H.
+  inversion_clear H.
+  inversion_clear H0.
+  inversion H1.
+  rewrite <-H3.
+  assumption.
+Qed.
+
+Lemma compiled_expr_equiv:
+  forall (e : expr) (st : state Z) (s i o : list Z) (n : Z),
+  (compile_expr e) |-- (s, st, i, o) -- (compile_expr e) --> (n::s, st, i, o)
+  <->
+  [| e |] st => n.
+Proof.
+  split.
+  - apply compiled_expr_not_incorrect.
+  - apply compiled_expr_correct.
+Qed.
